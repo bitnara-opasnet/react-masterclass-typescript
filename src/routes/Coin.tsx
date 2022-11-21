@@ -5,7 +5,7 @@
 // https://api.coinpaprika.com/#operation/getTickersById
 
 
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { 
     useLocation, 
     useParams, 
@@ -14,10 +14,11 @@ import {
     Link, 
     useRouteMatch 
 } from "react-router-dom";
+import { useQuery } from "react-query";
+import { Helmet } from "react-helmet"
 import styled from "styled-components";
 import Price from "./Price";
 import Chart from "./Chart";
-import { useQuery } from "react-query";
 import { fetchCoinInfo, fetchCoinTickers } from "./api";
 
 
@@ -27,18 +28,22 @@ const Container = styled.div`
     margin: 0 auto;
 `;
 
+const BtnContainer = styled.div`
+    width: 35%;
+`;
+
 
 const Header = styled.header`
     height: 15vh;
     display: flex;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
 `;
 
 
 
 const Title = styled.h1`
-    font-size: 48px;
+    font-size: 40px;
     color: ${(props) => props.theme.accentColor};
 `;
 
@@ -95,6 +100,34 @@ const Tab = styled.span<{ isActive: boolean }>`
         display: block;
     }
 `;
+
+const Nav = styled.div<{ isActive: boolean }>`
+    background-color: white;
+    width: 100%;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    color: ${(props) => (props.isActive ? props.theme.accentColor : "black")};
+    border-bottom: 3px solid
+        ${(props) => (props.isActive ? props.theme.accentColor : "white")};
+    font-size: 12px;
+`;
+
+const BackBtn = styled.div`
+    width: 30px;
+    height: 30px;
+    display: flex;
+    background-color: ${(props) => props.theme.bgColor};
+    border: 1px solid ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.textColor};
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    font-weight: 900;
+`;
+
 
 interface RouteParams {
     coinId: string;
@@ -172,7 +205,10 @@ function Coin() {
         ["info", coinId], () => fetchCoinInfo(coinId)
         );
     const {isLoading: tickersLoading, data: tickersData} = useQuery<PriceData>(
-        ["tickers", coinId], () => fetchCoinTickers(coinId)
+        ["tickers", coinId], () => fetchCoinTickers(coinId),
+        {
+            refetchInterval: 5000,
+        }
         );
 
 
@@ -197,7 +233,22 @@ function Coin() {
 
     return (
         <Container>
+            <Helmet>
+                <title>
+                    {state?.name ? (
+                            state.name
+                            ) : (
+                        loading ? "Loading" : infoData?.name
+                    )}
+                </title>
+            </Helmet>
             <Header>
+                <BtnContainer>
+                    <BackBtn>
+                        <Link to="/">&larr;</Link>
+                    </BackBtn>
+                </BtnContainer>
+
                 <Title>
                     {state?.name ? (
                         state.name
@@ -221,8 +272,8 @@ function Coin() {
                             <span>${infoData?.symbol}</span>
                         </OverviewItem>
                         <OverviewItem>
-                            <span>Open Source:</span>
-                            <span>{infoData?.open_source ? "Yes" : "No"}</span>
+                            <span>Price:</span>
+                            <span>${tickersData?.quotes.USD.price.toFixed(2)}</span>
                         </OverviewItem>
                     </Overview>
                     <Description>{infoData?.description}</Description>
@@ -252,7 +303,7 @@ function Coin() {
                             <Price />
                         </Route>
                         <Route path={"/:coinId/chart"}>
-                            <Chart />
+                            <Chart coinId={coinId} />
                         </Route>
                     </Switch>
                 </>
