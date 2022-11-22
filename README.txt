@@ -22,3 +22,9 @@ https://fonts.google.com
 
 -- Flat UI Color
 https://flatuicolors.com/palette/gb
+
+
+
+## 2022-11-22
+npm install react-helmet-async
+npm install recoil
