@@ -15,7 +15,7 @@ import {
     useRouteMatch 
 } from "react-router-dom";
 import { useQuery } from "react-query";
-import { Helmet } from "react-helmet"
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import styled from "styled-components";
 import Price from "./Price";
 import Chart from "./Chart";
@@ -101,19 +101,6 @@ const Tab = styled.span<{ isActive: boolean }>`
     }
 `;
 
-const Nav = styled.div<{ isActive: boolean }>`
-    background-color: white;
-    width: 100%;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 30px;
-    color: ${(props) => (props.isActive ? props.theme.accentColor : "black")};
-    border-bottom: 3px solid
-        ${(props) => (props.isActive ? props.theme.accentColor : "white")};
-    font-size: 12px;
-`;
 
 const BackBtn = styled.div`
     width: 30px;
@@ -195,7 +182,13 @@ interface PriceData {
 }
 
 
-function Coin() {
+interface ICoinProps {
+    isDark: boolean;
+};
+
+
+
+function Coin({isDark}: ICoinProps) {
     const {coinId} = useParams<RouteParams>();
     const {state} = useLocation<RouteState>();
     const priceMatch = useRouteMatch("/:coinId/price");
@@ -233,15 +226,17 @@ function Coin() {
 
     return (
         <Container>
-            <Helmet>
-                <title>
-                    {state?.name ? (
-                            state.name
-                            ) : (
-                        loading ? "Loading" : infoData?.name
-                    )}
-                </title>
-            </Helmet>
+            <HelmetProvider>
+                <Helmet>
+                    <title>
+                        {state?.name ? (
+                                state.name
+                                ) : (
+                            loading ? "Loading" : infoData?.name
+                        )}
+                    </title>
+                </Helmet>
+            </HelmetProvider>
             <Header>
                 <BtnContainer>
                     <BackBtn>
@@ -303,7 +298,7 @@ function Coin() {
                             <Price />
                         </Route>
                         <Route path={"/:coinId/chart"}>
-                            <Chart coinId={coinId} />
+                            <Chart coinId={coinId} isDark={isDark} />
                         </Route>
                     </Switch>
                 </>
