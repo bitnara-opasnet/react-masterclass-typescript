@@ -1,4 +1,3 @@
-import { useState } from "react";
 import styled from "styled-components";
 
 // 객체의 속성 선언 => Container

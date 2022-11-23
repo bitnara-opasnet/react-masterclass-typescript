@@ -1,7 +1,5 @@
 import { useQuery } from "react-query";
-import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { isDarkAtom } from "../atoms";
 import { fetchCoinTickers } from "./api";
 
 
@@ -109,7 +107,7 @@ function Price({coinId}: IPriceProps) {
     const {isLoading, data} = useQuery<IPriceData>(
             ["price", coinId], () => 
                 fetchCoinTickers(coinId), 
-                // {refetchInterval: 5000,}
+                {refetchInterval: 5000,}
             );
     const ath = data?.quotes.USD?.ath_date;
     const athDate = new Date(ath??0);

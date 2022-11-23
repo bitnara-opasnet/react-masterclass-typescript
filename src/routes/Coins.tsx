@@ -1,4 +1,3 @@
-// import { useEffect, useState } from "react";
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";

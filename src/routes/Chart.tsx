@@ -61,7 +61,7 @@ function Chart({coinId}: IChartProps) {
                         mode: isDark? "dark" : "light",
                     },
                     chart: {
-                        height: "300px",
+                        height: "200px",
                         width: "100%",
                         toolbar: {
                             show: false,
@@ -117,8 +117,8 @@ function Chart({coinId}: IChartProps) {
                                 show: false,
                             },
                             background: "transparent",
-                            width: 500,
-                            height: 300,
+                            height: "200px",
+                            width: "100%",
                         },
                         plotOptions: {
                             candlestick: {
