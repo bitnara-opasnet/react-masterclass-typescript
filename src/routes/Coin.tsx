@@ -22,29 +22,30 @@ import Chart from "./Chart";
 import { fetchCoinInfo, fetchCoinTickers } from "./api";
 
 
+const Title = styled.h1`
+	font-size: 2.4rem;
+	font-weight: 600;
+	max-width: 11ch;
+	text-overflow: ellipsis;
+	overflow-x: clip;
+	white-space: nowrap;
+`;
+
+
+
 const Container = styled.div`
-    padding: 0px 20px;
-    max-width: 480px;
-    margin: 0 auto;
+	padding: 0 2rem;
+	max-width: 30rem;
+	margin: 0 auto;
 `;
-
-const BtnContainer = styled.div`
-    width: 35%;
-`;
-
 
 const Header = styled.header`
-    height: 15vh;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-`;
-
-
-
-const Title = styled.h1`
-    font-size: 40px;
-    color: ${(props) => props.theme.accentColor};
+	height: 8rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	color: ${(props) => props.theme.accentColor};
 `;
 
 
@@ -53,66 +54,82 @@ const Loader = styled.span`
     display: block;
 `;
 
+
+const DetailContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin-bottom: 8rem;
+	p {
+		line-height: 1.5;
+	}
+`;
+
+
 const Overview = styled.div`
-    display: flex;
-    justify-content: space-between;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 10px 20px;
-    border-radius: 10px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-around;
+	background-color: ${(props) => props.theme.cardBgColor};
+	border-radius: 0.7rem;
+	box-shadow: 0 0.2rem 0.5rem rgba(10, 10, 10, 0.1);
+	padding: 1rem;
 `;
 
 
 const OverviewItem = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    span:first-child {
-        font-size: 10px;
-        font-weight: 400;
-        text-transform: uppercase;
-        margin-bottom: 5px;
-    }
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+	span:first-child {
+		font-size: 0.75rem;
+		font-weight: 700;
+		opacity: 0.6;
+	}
 `;
 
 
-const Description = styled.p`
-    margin: 20px 0px;
+const Tab = styled(Link)<{ $isActive: boolean }>`
+	display: flex;
+	position: relative;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 3rem;
+	font-weight: ${(props) => (props.$isActive ? "700" : "500")};
+	color: ${(props) => (props.$isActive ? props.theme.accentColor : props.theme.textColor)};
+	opacity: ${(props) => (props.$isActive ? 1 : 0.6)};
+	transition: color 0.3s;
+	&::after {
+		content: "";
+		position: absolute;
+		height: 2px;
+		bottom: 4px;
+		width: 1.4rem;
+		border-radius: 1px;
+		background-color: ${(props) => (props.$isActive ? props.theme.accentColor : props.theme.textColor)};
+		transition: background-color 0.3s;
+	}
+`;
+
+const Tabbar = styled.div`
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-around;
 `;
 
 
-const Tabs = styled.div`
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    margin: 25px 0px;
-    gap: 10px;
-`;
-
-const Tab = styled.span<{ isActive: boolean }>`
-    text-align: center;
-    text-transform: uppercase;
-    font-size: 12px;
-    font-weight: 400;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 7px 0px;
-    border-radius: 10px;
-    color: ${(props) => props.isActive ? props.theme.accentColor : props.theme.textColor};
-    a {
-        display: block;
-    }
-`;
-
-
-const BackBtn = styled.div`
-    width: 30px;
-    height: 30px;
-    display: flex;
-    background-color: ${(props) => props.theme.bgColor};
-    border: 1px solid ${(props) => props.theme.textColor};
-    color: ${(props) => props.theme.textColor};
-    justify-content: center;
-    align-items: center;
-    border-radius: 20px;
-    font-weight: 900;
+const BackBtn = styled(Link)`
+	position: absolute;
+	left: 0;
+	font-size: 2.2rem;
+	display: flex;
+	align-items: center;
+	padding: 0.8rem;
 `;
 
 
@@ -147,7 +164,7 @@ interface InfoData {
     last_data_at: string;
 }
 
-interface PriceData {
+interface IPriceData {
     id: string;
     name: string;
     symbol: string;
@@ -182,10 +199,6 @@ interface PriceData {
 }
 
 
-interface ICoinProps {
-};
-
-
 
 function Coin() {
     const {coinId} = useParams<RouteParams>();
@@ -196,13 +209,12 @@ function Coin() {
     const {isLoading: infoLoading, data: infoData} = useQuery<InfoData>(
         ["info", coinId], () => fetchCoinInfo(coinId)
         );
-    const {isLoading: tickersLoading, data: tickersData} = useQuery<PriceData>(
+    const {isLoading: tickersLoading, data: tickersData} = useQuery<IPriceData>(
         ["tickers", coinId], () => fetchCoinTickers(coinId),
         {
             refetchInterval: 5000,
         }
         );
-
 
     // const [loading, setLoading] = useState(true);
     // const [info, setInfo] = useState<InfoData>();
@@ -228,78 +240,74 @@ function Coin() {
             <HelmetProvider>
                 <Helmet>
                     <title>
-                        {state?.name ? (
-                                state.name
-                                ) : (
-                            loading ? "Loading" : infoData?.name
-                        )}
+                        {state?.name ? (state.name) : (loading ? "Loading" : infoData?.name)}
                     </title>
                 </Helmet>
             </HelmetProvider>
             <Header>
-                <BtnContainer>
-                    <BackBtn>
-                        <Link to="/">&larr;</Link>
-                    </BackBtn>
-                </BtnContainer>
-
+                <BackBtn to="/">
+                    &larr;
+                    {/* <Link to="/">&larr;</Link> */}
+                </BackBtn>
                 <Title>
-                    {state?.name ? (
-                        state.name
-                        ) : (
-                    loading ? "Loading" : infoData?.name
-                    )}
+                    {state?.name ? (state.name) : (loading ? "Loading" : infoData?.name)}
                 </Title>
             </Header>
             {loading ? (
-            <Loader>Loading...</Loader>
+                <Loader>{coinId} 로딩 중...</Loader>
             ) : (
                 <>
                     {/* overview 화면 */}
-                    <Overview>
-                        <OverviewItem>
-                            <span>Rank:</span>
-                            <span>{infoData?.rank}</span>
-                        </OverviewItem>
-                        <OverviewItem>
-                            <span>Symbol</span>
-                            <span>${infoData?.symbol}</span>
-                        </OverviewItem>
-                        <OverviewItem>
-                            <span>Price:</span>
-                            <span>${tickersData?.quotes.USD.price.toFixed(2)}</span>
-                        </OverviewItem>
-                    </Overview>
-                    <Description>{infoData?.description}</Description>
-                    <Overview>
-                        <OverviewItem>
-                            <span>Total Supply:</span>
-                            <span>{tickersData?.total_supply}</span>
-                        </OverviewItem>
-                        <OverviewItem>
-                            <span>Max Supply:</span>
-                            <span>{tickersData?.max_supply}</span>
-                        </OverviewItem>
-                    </Overview>
+                    <DetailContainer>
+                        <Overview>
+                            <OverviewItem>
+                                <span>순위</span>
+                                <span>{infoData?.rank}</span>
+                            </OverviewItem>
+                            <OverviewItem>
+                                <span>심볼</span>
+                                <span>${infoData?.symbol}</span>
+                            </OverviewItem>
+                            <OverviewItem>
+                                <span>현재가</span>
+                                <span>${tickersData?.quotes.USD.price.toFixed(3) ?? "Unknown"}</span>
+                            </OverviewItem>
+                        </Overview>
+                        <Overview>
+                            <OverviewItem>
+                                <span>총량</span>
+                                <span>{tickersData?.total_supply}</span>
+                            </OverviewItem>
+                            <OverviewItem>
+                                <span>최대 발행량</span>
+                                <span>{tickersData?.max_supply}</span>
+                            </OverviewItem>
+                        </Overview>
+                        {infoData?.description ? (
+                            <Overview>
+                                <p>{infoData?.description}</p>
+                            </Overview>
+                        ) : null}
+                        <Tabbar>
+                            <Tab to={`/${coinId}/price`} $isActive={priceMatch !== null}>
+                                Price
+                            </Tab>
+                            <Tab to={`/${coinId}/chart`} $isActive={chartMatch !== null}>
+                                Chart
+                            </Tab>
+					    </Tabbar>
 
-                    <Tabs>
-                        <Tab isActive={chartMatch !== null}>
-                            <Link to={`/${coinId}/chart`}>Chart</Link>
-                        </Tab>
-                        <Tab isActive={priceMatch !== null}>
-                            <Link to={`/${coinId}/price`}>Price</Link>
-                        </Tab>
-                    </Tabs>
+                        {/* route 화면 */}
+                        <Switch>
+                            <Route path={"/:coinId/price"}>
+                                <Price coinId={coinId} />
+                            </Route>
+                            <Route path={"/:coinId/chart"}>
+                                <Chart coinId={coinId} />
+                            </Route>
+                        </Switch>
 
-                    {/* route 화면 */}
-                    <Switch>
-                        <Route path={"/:coinId/price"}>
-                            <Price />
-                        </Route>
-                        <Route path={"/:coinId/chart"}>
-                            <Chart coinId={coinId} />
-                        </Route>
-                    </Switch>
+                    </DetailContainer>
                 </>
             )}
         </Container>

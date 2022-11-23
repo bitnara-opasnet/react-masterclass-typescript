@@ -1,10 +1,10 @@
-import { createGlobalStyle, ThemeProvider } from "styled-components";
+import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 import Router from "./routes/Router";
-import { ReactQueryDevtools } from "react-query/devtools";
 import { darkTheme, lightTheme } from "./theme";
-import { useState } from "react";
-import { useRecoilValue } from "recoil";
+// import { useState } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isDarkAtom } from "./atoms";
+// import { ReactQueryDevtools } from "react-query/devtools";
 
 
 
@@ -71,14 +71,43 @@ const GlobalStyle = createGlobalStyle`
     }
 `;
 
+
+const Toggle = styled.button`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: fixed;
+	bottom: 1rem;
+	left: 1rem;
+	width: 3rem;
+	height: 3rem;
+	padding: 0;
+	font-size: 1.6rem;
+	border: none;
+	border-radius: 50%;
+	background-color: ${(props) => props.theme.cardBgColor};
+	color: ${(props) => props.theme.accentColor};
+	box-shadow: 0 0.2rem 0.5rem rgba(10, 10, 10, 0.1);
+	transition: background-color 0.3s, box-shadow 0.3s;
+	cursor: pointer;
+`
+
+
 function App() {
     const isDark = useRecoilValue(isDarkAtom);
+    const setDarkAtom = useSetRecoilState(isDarkAtom);
+    const toggleDarkAtom = () => setDarkAtom((prev) => !prev);
     return (
         <>
             <ThemeProvider theme={isDark? darkTheme : lightTheme}>
+                <Toggle onClick={toggleDarkAtom}>
+                    <div>
+                        {isDark ? "🔆" : "🌙"}
+                    </div>
+				</Toggle>
                 <GlobalStyle />
                 <Router />
-                <ReactQueryDevtools initialIsOpen={true} />
+                {/* <ReactQueryDevtools initialIsOpen={true} /> */}
             </ThemeProvider>
         </>
     );

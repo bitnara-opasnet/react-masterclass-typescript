@@ -18,40 +18,51 @@ interface IHistorical {
 
 
 
-interface ChartProps {
+interface IChartProps {
     coinId: string;
 }
 
 
-function Chart({coinId}: ChartProps) {
+function Chart({coinId}: IChartProps) {
     const isDark = useRecoilValue(isDarkAtom);
-
     const {isLoading, data} = useQuery<IHistorical[]>(
-        ["ohlcv", coinId], () => fetchCoinHistory(coinId),
-        {
-            refetchInterval: 5000,
-        }
-        )
+            ["ohlcv", coinId], () => 
+                fetchCoinHistory(coinId), 
+                {refetchInterval: 5000,}
+            )
+    let validData = data ?? [];
+	if ("error" in validData) {
+		validData = [];
+	};
+
     return (
         <>
-        <h1>Chart</h1>
         {isLoading ? (
             "Loading Chart..."
         ) : (
-            <ApexChart
-                series={[
-                    {
-                        name: "종가",
-                        data: data?.map((price) => price.close) ?? [],
+            <div>
+                <ApexChart
+                    type="line"
+                    series={[
+                        {
+                            name: "시세",
+                            data: validData?.map((price) => price.close) ?? [],
+                        },
+                    ]}
+                    options={{
+                    noData: {
+                        text: "차트 데이터가 없습니다.",
+                        align: "center",
+                        verticalAlign: "middle",
+                        offsetX: 0,
+                        offsetY: 0,
                     },
-                ]}
-                options={{
                     theme: {
                         mode: isDark? "dark" : "light",
                     },
                     chart: {
-                        height: 300,
-                        width: 500,
+                        height: "300px",
+                        width: "100%",
                         toolbar: {
                             show: false,
                         },
@@ -59,11 +70,11 @@ function Chart({coinId}: ChartProps) {
                     },
                     xaxis: {
                         type: "datetime",
-                        categories: data?.map((price) => price.time_close),
+                        categories: validData?.map((price) => price.time_close),
                     },
                     yaxis: {
                         labels: {
-                            formatter: (value) => `$${value.toFixed(0)}`
+                            formatter: (value: number) => `$${value.toFixed(0)}`
                         },
                         tickAmount: 6,
                     },
@@ -78,12 +89,64 @@ function Chart({coinId}: ChartProps) {
                     colors: ["#0fbcf9"],
                     tooltip: {
                         y: {
-                            formatter: (value) => `$${value.toFixed(2)}`,
+                            formatter: (value: number) => `$${value.toFixed(2)}`,
                         },
                     }
                 }}
-                type="line"
-            />
+                />
+                <ApexChart 
+                    type="candlestick"
+                    series={[
+                        {
+                            name: "시세",
+                            data: validData.map((price) => ({
+                                x: price.time_close,
+                                y: [price.open, price.high, price.low, price.close],
+                            })),
+                        },
+                    ]}
+                    options ={{
+                        noData: {
+                            text: "",
+                        },
+                        theme: {
+                            mode: isDark? "dark" : "light",
+                        },
+                        chart: {
+                            toolbar: {
+                                show: false,
+                            },
+                            background: "transparent",
+                            width: 500,
+                            height: 300,
+                        },
+                        plotOptions: {
+                            candlestick: {
+                                colors: {
+                                    upward: "red",
+                                    downward: "blue",
+                                },
+                                wick: {
+                                    useFillColor: true,
+                                },
+                            },
+                        },   
+                        xaxis: {
+                            type: "datetime",
+                            categories: validData?.map((price) => price.time_close),
+                        },
+                        yaxis: {
+                            labels: {
+                                formatter: (value) => `$${value.toFixed(0)}`
+                            },
+                            tickAmount: 6,
+                        },
+                        stroke: {
+                            width: 2,
+                        },                 
+                    }}
+                />
+            </div>
         )}
         </>
     );

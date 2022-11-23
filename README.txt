@@ -28,3 +28,8 @@ https://flatuicolors.com/palette/gb
 ## 2022-11-22
 npm install react-helmet-async
 npm install recoil
+
+
+## 2022-11-23
+npm install @mui/material @emotion/react @emotion/styled --force
+npm install @mui/icons-material

@@ -2,48 +2,8 @@
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
-import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from "styled-components";
-import { isDarkAtom } from '../atoms';
 import { fetchCoins } from "./api";
-
-
-const Container = styled.div`
-    padding: 0px 20px;
-    max-width: 480px;
-    margin: 0 auto;
-`;
-
-
-const Header = styled.header`
-    height: 15vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
-
-
-const CoinList = styled.ul``;
-
-
-const Coin = styled.li`
-    background-color: ${(props) => props.theme.cardBgColor};
-    color: ${(props) => props.theme.textColor};
-    margin-bottom: 10px;
-    border-radius: 15px;
-    border: 1px solid white;
-    a {
-        display: flex;
-        align-items: center;
-        padding: 20px;
-        transition: color 0.2s ease-in;
-    }
-    &:hover {
-        a {
-            color: ${(props) => props.theme.accentColor};
-        }
-    }
-`;
 
 
 const Title = styled.h1`
@@ -52,27 +12,64 @@ const Title = styled.h1`
 `;
 
 
-const Loader = styled.span`
-  text-align: center;
-  display: block;
+const Container = styled.div`
+	padding: 0 2rem;
+	max-width: 30rem;
+	margin: 0 auto;
 `;
 
 
-const Img = styled.img`
-  width: 35px;
-  height: 35px;
-  margin-right: 10px;
+const Header = styled.header`
+	height: 8rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 `;
 
 
-const Btn = styled.button`
-    height: 60px;
-    width: 60px;
-    border-radius: 50%;
+const CoinList = styled.ul`
+	display: flex;
+	gap: 1rem;
+	flex-direction: column;
+`;
+
+
+const Coin = styled.li`
+	display: flex;
+	align-items: center;
+	min-height: 3.5rem;
     background-color: ${(props) => props.theme.cardBgColor};
-    border: 0;
     color: ${(props) => props.theme.textColor};
-`
+    border-radius: 15px;
+    box-shadow: 0 0.2rem 0.5rem rgba(10, 10, 10, 0.1);
+	transition: background-color 0.3s, box-shadow 0.3s;
+    a {
+		display: flex;
+		padding: 1rem;
+		width: 100%;
+		align-items: center;
+		transition: color 0.3s;
+    }
+    &:hover {
+        a {
+            color: ${(props) => props.theme.accentColor};
+            box-shadow: 0 0.2rem 0.75rem rgba(10, 10, 10, 0.2);
+        }
+    }
+`;
+
+
+const Loader = styled.span`
+	text-align: center;
+	display: block;
+`;
+
+
+const Logo = styled.img`
+	width: 1.5rem;
+	height: 1.5rem;
+	margin-right: 0.7rem;
+`;
 
 
 interface ICoin {
@@ -88,23 +85,19 @@ interface ICoin {
 
 
 function Coins() {
-    const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
     // const [coins, setCoins] = useState<ICoin[]>([]);
     // const [loading, setLoading] = useState(true);
     // useEffect(() => {
-    //     (async() => {
-    //         const response = await fetch(`https://api.coinpaprika.com/v1/coins`);
-    //         const json = await response.json();
-    //         setCoins(json.slice(0, 100));
-    //         setLoading(false);
-    //     })();
-    // }, []);
+        //     (async() => {
+            //         const response = await fetch(`https://api.coinpaprika.com/v1/coins`);
+            //         const json = await response.json();
+            //         setCoins(json.slice(0, 100));
+            //         setLoading(false);
+            //     })();
+            // }, []);
 
-    // const setDarkAtom = useSetRecoilState(isDarkAtom);
-    const [isDark, setDarkAtom] = useRecoilState(isDarkAtom);
-    const toggleDarkAtom = () => 
-        setDarkAtom((prev) => !prev)
-    ;
+    // React Query 사용
+    const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
 
     return (
         <Container>
@@ -114,9 +107,6 @@ function Coins() {
                 </Helmet>
             </HelmetProvider>
             <Header>
-                <Btn onClick={toggleDarkAtom}>
-                    {isDark ? "🌞" : "🌙"}
-                </Btn>
                 <Title>코인</Title>
             </Header>
             {isLoading ? (
@@ -129,7 +119,7 @@ function Coins() {
                                 pathname: `/${coin.id}`,
                                 state: { name: coin.name },
                             }}>
-                                <Img src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`} />
+                                <Logo src={`https://coinicons-api.vercel.app/api/icon/${coin.symbol.toLowerCase()}`} />
                                 {coin.name} &rarr;
                             </Link>
                         </Coin>
