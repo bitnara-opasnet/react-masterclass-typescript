@@ -44,7 +44,7 @@ const Coin = styled.li`
 	transition: background-color 0.3s, box-shadow 0.3s;
     a {
 		display: flex;
-		padding: 1rem;
+		padding: 15px;
 		width: 100%;
 		align-items: center;
 		transition: color 0.3s;

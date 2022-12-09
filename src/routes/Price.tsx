@@ -5,25 +5,22 @@ import { fetchCoinTickers } from "./api";
 
 const GridContainer = styled.div`
 	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-auto-rows: 6rem;
-	gap: 1rem;
+	gap: 15px;
 `;
 
 
 const GridItem = styled.div`
 	display: flex;
-	align-items: flex-start;
 	justify-content: space-between;
 	flex-direction: column;
-	padding: 1rem;
+	padding: 10px;
 	background-color: ${(props) => props.theme.cardBgColor};
-	border-radius: 0.7rem;
-	box-shadow: 0 0.2rem 0.5rem rgba(10, 10, 10, 0.1);
+	border-radius: 10px;
+    box-shadow: 0 0.2rem 0.5rem rgba(10, 10, 10, 0.1);
 `;
 
 const Label = styled.div`
-	font-size: 0.9rem;
+	font-size: 15px;
 	font-weight: 700;
 	opacity: 0.6;
 `;
@@ -35,16 +32,13 @@ const BigGridItem = styled.div`
 	flex-direction: row;
 	grid-column: 1 / 3;
 	grid-row: 1 / 2;
-	padding: 1.2rem;
+	padding: 15px;
 	justify-content: space-between;
 	background-color: ${(props) => props.theme.cardBgColor};
-	border-radius: 0.7rem;
-	box-shadow: 0 0.2rem 0.5rem rgba(10, 10, 10, 0.1);
-	& > ${Label} {
-		line-height: 1.5;
-	}
-	& > div:last-child {
-		font-size: 2rem;
+	border-radius: 10px;
+    box-shadow: 0 0.2rem 0.5rem rgba(10, 10, 10, 0.1);
+	div:last-child {
+		font-size: 30px;
 		font-weight: 300;
 	}
 `;
@@ -56,7 +50,7 @@ const PriceIndicatorStyled = styled.div`
 	align-items: center;
 	width: 50%;
 	justify-content: space-between;
-	font-size: 2rem;
+	font-size: 32px;
 	font-weight: 300;
 `
 
